@@ -2,7 +2,6 @@
 """
 Created on Tue Jan  5 17:25:54 2021
 
-@author: Roméo
 
 Title: Webscraping Functions For Yahoo Finance Tickers
 """

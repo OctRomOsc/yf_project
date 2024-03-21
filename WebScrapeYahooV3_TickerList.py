@@ -2,7 +2,6 @@
 """
 Created on Tue Jan  5 17:25:54 2021
 
-@author: Roméo
 
 Title: Webscraping Functions For Yahoo Finance Tickers
 """
@@ -213,7 +212,7 @@ def Historical_Data():
         
         # Use Selenium to find start date of data for specific ticker
         # Replace path with location where you want historical data csv files saved
-        History_path='C:\\Historical_Data\\'
+        History_path=r'D:\Professional\Data Science Finance Project\Historical_Data\\'
         if not os.path.exists(History_path):
             os.makedirs(History_path)
         ChromeOptions=webdriver.ChromeOptions()

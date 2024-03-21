@@ -2,7 +2,6 @@
 """
 Created on Tue Jan 12 17:23:36 2021
 
-@author: Roméo
 
 Title: Connecting to PostgreSQL Server and Importing Ticker History CSV
 """
@@ -25,9 +24,38 @@ from selenium import webdriver
 import chromedriver_binary
 
 #%%
-'Cell 1: Config file for database'
+# 'Cell 1: Create database'
+# def create_database():
+    
+#     Database_create = '''SELECT 'CREATE DATABASE finance'
+#         WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'finance')\gexec;'''
+            
+#     conn = None
+#     try:
+#         # read the connection parameters
+#         params = config()
+#         # connect to the PostgreSQL server
+#         conn = psycopg2.connect(**params)
+#         cur = conn.cursor()
+#         # create database if does not exist
+#         cur.execute(Database_create)
+#         # close communication with the PostgreSQL database server
+#         cur.close()
+#         # commit the changes
+#         conn.commit()
+#     except (Exception, psycopg2.DatabaseError) as error:
+#         print(error)
+#     finally:
+#         if conn is not None:
+#             conn.close()
 
-def config(filename='C:\\Users\\Home\\Desktop\\Roméo\\Professional\\Data Science Finance Project\\PostgreSQL\\database.ini', section='postgresql'):
+
+# if __name__ == '__main__':
+#     create_()
+#%%
+'Cell 2: Config file for database'
+
+def config(filename=r'D:\Professional\Data Science Finance Project\PostgreSQL\database.ini', section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -44,8 +72,8 @@ def config(filename='C:\\Users\\Home\\Desktop\\Roméo\\Professional\\Data Scienc
 
     return db
 #%%
-'Cell 2: Connect to PostgreSQL server'
-def connect():
+'Cell 3: Connect to PostgreSQL server'
+def connect(Statement='SELECT version()'):
     """ Connect to the PostgreSQL database server """
     conn = None
     try:
@@ -60,12 +88,20 @@ def connect():
         cur = conn.cursor()
         
 	# execute a statement
-        print('PostgreSQL database version:')
-        cur.execute('SELECT version()')
-
-        # display the PostgreSQL database server version
-        db_version = cur.fetchone()
-        print(db_version)
+        if 'version' in Statement:
+            print('PostgreSQL database version:')
+            cur.execute(Statement)
+    
+            # display the PostgreSQL database server version
+            db_version = cur.fetchone()
+            print(db_version)
+        else:
+            cur.execute(Statement)
+            global data
+            global column_names
+            column_names = [desc[0] for desc in cur.description]
+            data=pd.DataFrame(cur.fetchall(),columns=column_names)
+            
        
 	# close the communication with the PostgreSQL
         cur.close()
@@ -75,15 +111,15 @@ def connect():
         if conn is not None:
             conn.close()
             print('Database connection closed.')
-
+            
 
 if __name__ == '__main__':
     connect()
 #%%
-'Cell 3: Create History Tables'
+'Cell 4: Create History Tables'
 #Written using SQL, could also read in csv as file and use psycopg2 cursor method copy_from() to avoid needing to put csvs in PostgreSQL accessible folder
 def create_tables():
-    History_path='C:\\Historical_Data\\'
+    History_path=r'D:\Professional\Data Science Finance Project\Historical_Data\\'
     Ticker_list=tuple([fname.split('\\')[-1].split('.')[0] for fname in glob.glob(History_path+'*csv')])
     Table_create = [
         f'''CREATE TABLE IF NOT EXISTS {Ticker}_history(
